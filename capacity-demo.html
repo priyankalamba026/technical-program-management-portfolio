@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Engineering Capacity Demo | Priyanka Lamba</title>
+<meta name="description" content="Explore an illustrative engineering capacity model with fictional data.">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#0d1726;color:#eaf0f5;font:16px/1.6 system-ui,sans-serif}main{max-width:1050px;margin:auto;padding:40px 24px 70px}a{color:#f0c997}h1{font-size:clamp(30px,5vw,46px);line-height:1.2;letter-spacing:-1px;margin:22px 0 16px}h2{font-size:21px;margin-top:0}p{color:#b6c5d8}.tag{color:#d9b386;font-size:12px;letter-spacing:1.5px;margin-top:32px}.layout{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:30px}.panel{background:#152537;border:1px solid #344a59;border-radius:12px;padding:26px}label{display:block;font-weight:600;font-size:14px;margin-top:17px}small{display:block;font-weight:400;color:#b6c5d8;font-size:12px;margin:3px 0 7px}input{width:100%;font:inherit;color:#eaf0f5;background:#0d1726;border:1px solid #62798c;border-radius:6px;padding:9px 12px}input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #f0c997;outline-offset:3px}.percent{position:relative}.percent input{padding-right:40px}.percent span{position:absolute;right:14px;top:9px;color:#b6c5d8}button{font:inherit;cursor:pointer;background:#d9b386;border:0;border-radius:6px;padding:10px 14px;color:#142332;margin:22px 0 0}.metrics{display:grid;gap:14px}.metric{padding-bottom:14px;border-bottom:1px solid #344a59}.metric span{display:block;color:#b6c5d8;font-size:13px}.metric strong{font-size:31px;font-variant-numeric:tabular-nums}.metric small{margin:0}.status{padding:14px;background:#243b4b;border-radius:6px;margin:18px 0;color:#eaf0f5}.status.shortfall{background:#513b35}.formula{font-size:14px;color:#b6c5d8}.formula p{margin:12px 0}.note{font-size:13px}.error{color:#ffcbba}.results[hidden]{display:none}details{margin-top:24px}summary{cursor:pointer;color:#f0c997}ul{padding-left:20px;color:#b6c5d8}footer{margin-top:28px;font-size:13px}@media(max-width:700px){.layout{grid-template-columns:1fr}.panel{padding:22px}main{padding:26px 18px 50px}}@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style></head>
+<body><main>
+<a href="./index.html#work">← Back to portfolio</a>
+<div class="tag">HANDS-ON BUILD · FICTIONAL DATA</div>
+<h1>Engineering capacity &amp; allocation</h1>
+<p>I designed and built an engineering capacity dashboard to make availability, allocation, and planning trade-offs visible. This simplified demonstration uses fictional inputs to show the calculation approach.</p>
+<p class="note">Change availability, allocation, or demand to explore a planning decision. This demo estimates capacity in engineer-days; it does not forecast a delivery date.</p>
+<div class="layout">
+<form class="panel" id="capacity-form" novalidate><h2>Planning assumptions</h2>
+<label for="engineers">Engineers<small>Team size for this planning period.</small></label><input id="engineers" name="engineers" type="number" min="1" max="1000" step="1" value="6" required>
+<label for="days">Weekdays in the period<small>Excludes weekends; includes any regional holidays below.</small></label><input id="days" name="days" type="number" min="1" max="366" step="1" value="20" required>
+<label for="holidays">Regional holidays per engineer<small>Simplified assumption: one shared regional calendar.</small></label><input id="holidays" name="holidays" type="number" min="0" max="366" step="1" value="1" required>
+<label for="pto">Total team time off (engineer-days)<small>Across the whole team, excluding weekends and holidays.</small></label><input id="pto" name="pto" type="number" min="0" max="366000" step="0.5" value="6" required>
+<label for="allocation">Allocation to this work<small>Share of available team time assigned to this scope.</small></label><div class="percent"><input id="allocation" name="allocation" type="number" min="0" max="100" step="1" value="70" required><span>%</span></div>
+<label for="buffer">Planning buffer<small>Reserve for uncertainty beyond known time off; 15% is illustrative.</small></label><div class="percent"><input id="buffer" name="buffer" type="number" min="0" max="100" step="1" value="15" required><span>%</span></div>
+<label for="demand">Estimated demand (engineer-days)<small>Effort estimate for the same scope and planning period.</small></label><input id="demand" name="demand" type="number" min="0" max="366000" step="0.5" value="60" required>
+<button type="reset">Reset example</button>
+</form>
+<section class="panel" aria-labelledby="results-heading"><h2 id="results-heading">Capacity &amp; trade-offs</h2>
+<div id="feedback" aria-live="polite" aria-atomic="true">
+<p id="error" class="error" hidden></p>
+<div class="results" id="results">
+<div class="metrics">
+<div class="metric"><span>Available after holidays &amp; time off</span><strong id="available">108.0</strong><small>engineer-days</small></div>
+<div class="metric"><span>Allocated before buffer</span><strong id="allocated">75.6</strong><small>engineer-days</small></div>
+<div class="metric"><span>Planned capacity after buffer</span><strong id="capacity">64.3</strong><small>engineer-days</small></div>
+<div class="metric"><span>Estimated demand</span><strong id="demand-value">60.0</strong><small>engineer-days</small></div>
+</div>
+<p class="status" id="status">4.3 engineer-days of headroom.</p>
+<p class="note" id="decision">Demand fits within the modeled capacity. Check skills, dependencies, and estimate confidence before committing.</p>
+</div></div>
+<details open><summary>How the model works</summary><div class="formula">
+<p><strong>Available</strong> = engineers × (weekdays − holidays) − total team time off</p>
+<p><strong>Allocated</strong> = available × allocation %</p>
+<p><strong>Planned capacity</strong> = allocated × (1 − buffer %)</p>
+<p><strong>Headroom or shortfall</strong> = planned capacity − estimated demand</p>
+</div></details>
+</section></div>
+<section class="panel" style="margin-top:24px"><h2>What this helps decide</h2><p>When demand exceeds capacity, adjust scope, timing, or allocation and compare the trade-offs. Increasing allocation also reduces time available for other work.</p>
+<details><summary>Assumptions &amp; limits</summary><ul>
+<li>Engineer-days represent effort, not elapsed calendar time or a guarantee of delivery.</li>
+<li>This example treats engineers as interchangeable and assumes a shared holiday calendar.</li>
+<li>Skills, dependencies, partial-period staffing, and differences in individual availability require a more detailed model.</li>
+<li>Demand estimates and the planning buffer are assumptions that should be reviewed with the team.</li>
+</ul></details></section>
+<noscript><p>This demo needs JavaScript to recalculate. The displayed default example is 108 available engineer-days, 75.6 allocated, and 64.3 planned after the buffer, against 60 days of demand.</p></noscript>
+<footer>Illustrative recreation with fictional data. No employer systems, source code, or internal data are included.</footer>
+</main>
+<script>
+(function(){
+const form=document.getElementById('capacity-form');
+const ids=['engineers','days','holidays','pto','allocation','buffer','demand'];
+function update(){
+ const error=document.getElementById('error'),results=document.getElementById('results');
+ let message='';
+ const values={};
+ for(const id of ids){
+   const input=document.getElementById(id);
+   values[id]=input.valueAsNumber;
+   if(!input.validity.valid&&!message)message='Enter a valid value for '+document.querySelector('label[for="'+id+'"]').childNodes[0].textContent.toLowerCase()+'.';
+ }
+ if(!message&&values.holidays>values.days)message='Regional holidays cannot exceed weekdays in the period.';
+ const gross=values.engineers*(values.days-values.holidays);
+ if(!message&&values.pto>gross)message='Total team time off cannot exceed team days remaining after holidays.';
+ error.hidden=!message;error.textContent=message;results.hidden=!!message;
+ if(message)return;
+ const available=gross-values.pto,allocated=available*values.allocation/100,capacity=allocated*(1-values.buffer/100),gap=capacity-values.demand;
+ const format=n=>n.toLocaleString('en-US',{minimumFractionDigits:1,maximumFractionDigits:1});
+ for(const [id,value] of [['available',available],['allocated',allocated],['capacity',capacity],['demand-value',values.demand]])document.getElementById(id).textContent=format(value);
+ const status=document.getElementById('status');
+ const balanced=Math.abs(gap)<1e-8;
+ status.classList.toggle('shortfall',gap< -1e-8);
+ status.textContent=balanced?'Demand exactly matches planned capacity.':format(Math.abs(gap))+' engineer-days of '+(gap<0?'shortfall.':'headroom.');
+ document.getElementById('decision').textContent=gap< -1e-8?'Demand exceeds modeled capacity. Revisit scope, timing, or allocation before committing.':balanced?'No modeled headroom remains. Review estimate confidence and unplanned work before committing.':'Demand fits within the modeled capacity. Check skills, dependencies, and estimate confidence before committing.';
+}
+form.addEventListener('input',update);
+form.addEventListener('submit',event=>event.preventDefault());
+form.addEventListener('reset',()=>setTimeout(update,0));
+update();
+})();
+</script></body></html>
